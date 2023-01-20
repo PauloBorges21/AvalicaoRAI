@@ -5,10 +5,7 @@ $(document).ready(function () {
 
 var formDisabled;
 var buttomDisabled;
-function splitHash(hash) {
-    let sanitize = hash.split("b90a40fa2006a43f6844feab08f23b7bf");
-    return sanitize[1];
-}
+
 var result = {};
 var resultFormFull = {};
 //var form = document.querySelector('#form');
@@ -196,9 +193,7 @@ function atualizaPorcentagem(q,usuario)
         $('#porcentagem').html("");
 
         $('#total-respondido').html(respondidas[0]);
-        $('#porcentagem').html(porcento +'%');
-        
-            
+        $('#porcentagem').html(porcento +'%');                
 
         }
     });

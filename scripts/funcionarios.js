@@ -1,5 +1,7 @@
 function buscaFuncionario() {
-    var funcionario = document.getElementById('func').value; 
+    //var funcionario = document.querySelector("#func");
+    var funcionario = $("#func").val();
+    console.log(funcionario);
     let sanitize =  splitHash(funcionario);
 
     $.ajax({
@@ -19,4 +21,10 @@ function dadosFuncionario(jsonStr)
     $('#nomeFunc').text('Olá '+jsonStr['Funcionario']);
     $('#departamentoFunc').text('Departamento: '+jsonStr['Departamento']);
     $('#gestorFunc').text('Gestor: '+jsonStr['Gestor']);
+}
+
+function splitHash(hash) {
+    console.log(hash);
+    let sanitize = hash.split("b90a40fa2006a43f6844feab08f23b7bf");
+    return sanitize[1];
 }

@@ -1,4 +1,17 @@
 <?php
+    $perguntas = new Perguntas($pdo);
+    $resposta = new Respostas($pdo);
+    $paginador = new Paginacao($pdo);
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    if (empty($_SESSION['funcionarioRai'])) {
+        header("Location: index.php");
+        exit();
+    }
+
+$p = $perguntas->getPerguntas($_SESSION['funcionarioRai'], 1);
 $vFlagTotal = $perguntas->getTotalFlag($_SESSION['funcionarioRai'], 1);
 $relacaoPerguntaResposta = $perguntas->getPerguntaRespostas(1);
 $filterP = $perguntas->setPergunta($relacaoPerguntaResposta);
@@ -7,8 +20,11 @@ $rsP = $resposta->setResposta($p);
 $perguntasTotal = $perguntas->getTotalPerguntas(1);
 $totalRespodido = $perguntas->getVerificaRespondido($_SESSION['funcionarioRai'], 1);
 $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL']);
- 
+
+$pg = $paginador->getPagQuestionario(1);
+var_dump($pg);
 ?>
+
 <style>
     .pf{
         display: flex;
@@ -19,8 +35,7 @@ $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL'])
         position: sticky;
         top: -10px; 
         position: fixed;
-        width: 100%;
-        border-left: 3px solid blue;
+        width: 100%;       
     }
     .rai__center{
         text-align: center;
@@ -178,3 +193,21 @@ $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL'])
             </div>
         </div>
 </form>
+<!-- <script>
+
+$(document).ready(function () {
+    const tbody = document.querySelector(".listar-pergunta");
+
+const listarPerguntas = async (pagina) => {
+    const dados = await fetch("./inc/questionario1-pag.php?pagina=" + pagina);
+    const resposta = await dados.text();
+    tbody.innerHTML = resposta;
+
+}
+
+
+listarPerguntas(1);
+})
+
+
+</script> -->

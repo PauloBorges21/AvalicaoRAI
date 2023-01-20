@@ -18,8 +18,9 @@
   <script src="../../js/template.js"></script>
   <script src="../../js/settings.js"></script>
   <script src="../../js/todolist.js"></script>
-  <script src="../../scripts/funcionarios.js"></script>
-  <script src="../../scripts/respostas-grava-questoes.js"></script>
+  <script src="../../scripts/funcionarios.js"></script>  
+  <script src="../../scripts/respostas-grava-questoes.js"></script> 
+  <!-- <script src="../../scripts/custom.js"></script> -->
   <!-- endinject -->
 </body>
 
