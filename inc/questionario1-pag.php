@@ -22,7 +22,7 @@ $totalRespodido = $perguntas->getVerificaRespondido($_SESSION['funcionarioRai'],
 $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL']);
 
 $pg = $paginador->getPagQuestionario(1);
-var_dump($pg);
+
 ?>
 
 <style>

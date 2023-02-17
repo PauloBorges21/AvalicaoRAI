@@ -8,47 +8,7 @@ class Perguntas extends Respostas
         $this->pdo = $pdo;
     }
 
-    // public function getPerguntas($tipoQuestionario)
-    // {
-    //     //$tipoQuestionario = 0;
-    //     //var_dump($tipoQuestionario);
-    //     // if($tipoQuestionario == false)
-    //     // {
-    //     //         $tipoQuestionario = 1;
-    //     // }else{
-    //     //     $tipoQuestionario = 2;
-    //     // }            
-    //         $sql = "SELECT
-    //         respostas.id as IDRESPOSTAS,
-    //         respostas.resposta,
-    //         perguntas.id as IDPERGUNTAS,
-    //         perguntas.pergunta,
-    //         q.nome as Questionario,
-    //         v.nome as TipoVisao           
-    //         FROM
-    //             relacao_pergunta_resposta rpr
-    //         INNER JOIN respostas
-    //             ON rpr.id_resposta = respostas.id
-    //         INNER JOIN perguntas
-    //         ON rpr.id_pergunta = perguntas.id
-    //         INNER JOIN tipo_questionario as q
-    //         ON q.id = rpr.id_questionario
-    //         LEFT JOIN tipo_visao as v
-    //         ON v.id = rpr.id_visao
-    //         WHERE id_questionario = :id_questionario AND rpr.id_pergunta = perguntas.id AND rpr.id_resposta = respostas.id";
-    //         try{
-    //             $sql = $this->pdo->prepare($sql);
-    //             $sql->bindValue(":id_questionario",$tipoQuestionario);
-    //             $sql->execute();
-    //             $result = $sql->fetchAll();
-    //             //var_dump($result);
-    //             if ($result != false) {
-    //               return $result;
-    //             }
-    //         } catch (PDOException $e){
-    //             echo "{$e->getMessage()}";
-    //         }
-    // }
+  
     public function getPerguntas($idUsuario, $tipoQuestionario)
     {
         $sql = "SELECT 

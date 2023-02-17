@@ -22,7 +22,7 @@ if (session_status() == PHP_SESSION_NONE) {
           <div class="col-lg-4 mx-auto">
             <div class="auth-form-light text-center py-5 px-4 px-sm-5">
               <div class="brand-logo">
-                <img src="images/logo-mobo.png" alt="logo">
+              <img src="../images/favicon.png" alt="logo">
               </div>
               <h4>Faça seu login para continuar.</h4>
               <form class="pt-3" method="POST">
@@ -53,13 +53,9 @@ if (session_status() == PHP_SESSION_NONE) {
 
         if(!empty($cpf) && !empty($email))
         {
-            echo   $cpf; 
-            echo '</br>';
-            echo $email;
             $loginFuncionario = $loginFuncionario->getFuncionario($email,$cpf);
-           var_dump($loginFuncionario);
-            if($loginFuncionario){
-                header("Location: avaliacao.php");
+               if($loginFuncionario){
+                header("Location: avaliacao-pag.php");
             }else{
                 echo '<p>Usuário e/ou Senha errados!</p>';
             }
