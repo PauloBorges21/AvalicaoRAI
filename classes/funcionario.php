@@ -167,7 +167,6 @@ class Funcionario
         }
     }
 
-
     public function uploadUsuario($id, $nome, $email, $cpf, $departamento, $flag_gestor, $id_gestor_direto)
     {
         $sql = "UPDATE funcionario SET nome = :nome, id_departamento = :id_departamento , cpf = :cpf, email =:email , flag_gestor = :flag_gestor , id_gestor_direto = :id_gestor_direto 
@@ -191,7 +190,6 @@ class Funcionario
             echo "Falha ao logar : {$e->getMessage()}";
         }
     }
-
 
     public function gravarUsuarioGerencia($idUsuario, $idDepartamento)
     {
@@ -236,6 +234,57 @@ class Funcionario
             return $result;
         } else {
             return false;
+        }
+    }
+
+    public function getAllFDesativados($ativo)
+    {
+        $sql = "SELECT * FROM funcionario WHERE";
+        if($ativo) {
+            $sql .= " ativo = 1 ";
+        } else {
+            $sql .= " ativo = 0 ";
+        }
+        $sql.="ORDER BY nome";
+        $sql = $this->pdo->prepare($sql);
+        $sql->execute();
+        $result = $sql->fetchAll();
+        if ($result != false) {
+            return $result;
+        } else {
+            return false;
+        }
+    }
+
+    public function desativaUsuario($id)
+    {
+        $sql = "UPDATE funcionario SET ativo = 0 WHERE id = :id";
+        try {
+            $sql = $this->pdo->prepare($sql);
+            $sql->bindValue(":id", $id);
+            $sql->execute();
+            if ($sql->rowCount() > 0) {
+                return true;
+            }
+
+        } catch (PDOException $e) {
+            echo "Falha ao logar : {$e->getMessage()}";
+        }
+    }
+
+    public function reativaUsuario($id)
+    {
+        $sql = "UPDATE funcionario SET ativo = 1 WHERE id = :id";
+        try {
+            $sql = $this->pdo->prepare($sql);
+            $sql->bindValue(":id", $id);
+            $sql->execute();
+            if ($sql->rowCount() > 0) {
+                return true;
+            }
+
+        } catch (PDOException $e) {
+            echo "Falha ao logar : {$e->getMessage()}";
         }
     }
 

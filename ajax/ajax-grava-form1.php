@@ -4,12 +4,13 @@ spl_autoload_register(function($class) {
     });
 require_once("../config.php");
 $q = new Questionario($pdo);
+$avaliacao = new Avaliacao($pdo);
 
 $usuario = $_POST['iduser'];
 $questionario = $_POST['qs'];
 
-$q->finalizaQuestionario1($usuario, $questionario);
-
-
+$a = $avaliacao->getAvaliacao();
+$idAv = $a['id'];
+$q->finalizaQuestionario1($usuario, $questionario,$idAv);
 echo 'true';
 

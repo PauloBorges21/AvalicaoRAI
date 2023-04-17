@@ -15,7 +15,6 @@
                         <span class="menu-title">Dashboard</span>
                     </a>
                 </li>
-               
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
                         <i class="icon-bar-graph menu-icon"></i>
@@ -24,12 +23,14 @@
                     </a>
                     <div class="collapse" id="charts">
                         <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"> <a class="nav-link" href="status-questionario.php">Status</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="status-questionario.php">Relatório</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="status-questionario-presidencia.php">Relatório Presidência</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="relatorio-dimensoes.php">Relatório Dimensões</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="relatorio-p-culturais.php">Relatório Práticas</a></li>
                             
                         </ul>
                     </div>
                 </li>
-               
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
                         <i class="icon-head menu-icon"></i>
@@ -40,6 +41,7 @@
                         <ul class="nav flex-column sub-menu">
                             <li class="nav-item"> <a class="nav-link" href="registro-users.php"> Cadastro </a></li>
                             <li class="nav-item"> <a class="nav-link" href="editar-list-users.php"> Editar </a></li>
+                            <li class="nav-item"> <a class="nav-link" href="desativados-list-users.php"> Desativados </a></li>
                         </ul>
                     </div>
                 </li> 
@@ -54,7 +56,21 @@
                             <li class="nav-item"> <a class="nav-link" href="registro-dp.php"> Cadastro </a></li>                            
                         </ul>
                     </div>
-                </li>               
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="collapse" href="#perguntas" aria-expanded="false" aria-controls="auth">
+                        <i class="icon-head menu-icon"></i>
+                        <span class="menu-title">Perguntas</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="perguntas">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item"> <a class="nav-link" href="lista-perguntas.php"> Editar Pergunta </a></li>
+<!--                            <li class="nav-item"> <a class="nav-link" href="editar-list-users.php"> Editar </a></li>-->
+<!--                            <li class="nav-item"> <a class="nav-link" href="desativados-list-users.php"> Desativados </a></li>-->
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </nav>
 

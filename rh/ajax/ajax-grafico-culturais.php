@@ -8,31 +8,48 @@ $media = new Respostas($pdo);
 
 function getData(){
     $perguntasConfianca = [1,2,3,4,5,6,7,8,9]; // IDS Perguntas
-     return $perguntasConfianca;
-  }
- 
-  if(isset($_GET['action']) && $_GET['action'] == "getData"){
+    return $perguntasConfianca;
+}
+
+if ($_GET['selectedValue'] == 49) {
+    $dp = [49, 61, 62];
+} elseif ($_GET['selectedValue'] == 54) {
+    $dp = [54, 65];
+} elseif ($_GET['selectedValue'] == 53) {
+    $dp = [53, 63];
+} else {
+    intval($_GET['selectedValue']);
+    $dp[] = $_GET['selectedValue'];
+}
+
+if(isset($_GET['action']) && $_GET['action'] == "getData"){
     $perguntasPraticas = getData();
-    $totalRespostas = $media->countRespostaD($perguntasPraticas,"praticas");    
+    $totalRespostas = $media->countRespostaD($perguntasPraticas,"praticas", $_GET['presidencia'],$dp);
     $auxiliarVE = [];
     $auxiliarVA = [];
     $auxiliarResultVE = [];
     $auxiliarResultVA = [];
     foreach ($perguntasPraticas as $idArray):
         foreach ($totalRespostas as $itens):
-          if ($idArray == intval($itens->modelo_praticas) && $itens->id_visao == '1') {                       
-            array_push($auxiliarVA, $itens->total);
-          } elseif($idArray == intval($itens->modelo_praticas) && $itens->id_visao == '2')  {        
-            array_push($auxiliarVE, $itens->total);
-          }
+            if ($idArray == intval($itens->modelo_praticas) && $itens->id_visao == '1') {
+                array_push($auxiliarVA, $itens->total);
+            } elseif($idArray == intval($itens->modelo_praticas) && $itens->id_visao == '2')  {
+                array_push($auxiliarVE, $itens->total);
+            }
         endforeach;
-         $gconfiancaVA = $media->porcentagemTotal($auxiliarVA, 5, false);
-         $gconfiancaVE = $media->porcentagemTotal($auxiliarVE, 5, false);       
-         array_push($auxiliarResultVA, $gconfiancaVA);
-         array_push($auxiliarResultVE, $gconfiancaVE);
-         $auxiliarVE = [];
-         $auxiliarVA = [];
-      endforeach;
-     }     
-     $result = array_merge($auxiliarResultVA, $auxiliarResultVE);
-     echo json_encode($result);
+        $gconfiancaVA = $media->porcentagemTotal($auxiliarVA, 5, false);
+        $gconfiancaVE = $media->porcentagemTotal($auxiliarVE, 5, false);
+        if (is_nan($gconfiancaVA)) {
+            $gconfiancaVA = 0;
+        }
+        if (is_nan($gconfiancaVE)) {
+            $gconfiancaVE = 0;
+        }
+        array_push($auxiliarResultVA, $gconfiancaVA);
+        array_push($auxiliarResultVE, $gconfiancaVE);
+        $auxiliarVE = [];
+        $auxiliarVA = [];
+    endforeach;
+}
+$result = array_merge($auxiliarResultVA, $auxiliarResultVE);
+echo json_encode($result);

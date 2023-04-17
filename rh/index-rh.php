@@ -1,7 +1,7 @@
 <?php
 
 
-include '../header.php';
+include 'header-rh.php';
 // $query = 'SELECT * FROM TipoVisao';
 // $statement = $pdo->prepare($query);
 // $statement->execute();
@@ -68,4 +68,4 @@ if (session_status() == PHP_SESSION_NONE) {
     <!-- page-body-wrapper ends -->
   </div>
   
-  <?php include '../footer.php';?>
+  <?php include 'footer-rh.php';?>

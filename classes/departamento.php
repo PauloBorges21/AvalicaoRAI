@@ -25,6 +25,7 @@ class Departamento
         }
     }
 
+
     public function getGestor($idUsuario)
     {
         $sql = "SELECT * FROM gestores 

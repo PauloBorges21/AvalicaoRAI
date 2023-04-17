@@ -1,63 +1,98 @@
 <?php
+$avaliacaoAtiva = $idAvaliacao['id'];
+$avaliacaoNome = $idAvaliacao['avaliacao'];
+
+$p = $perguntas->getPerguntas($_SESSION['funcionarioRai'], 1, $avaliacaoAtiva);
 $vFlagTotal = $perguntas->getTotalFlag($_SESSION['funcionarioRai'], 1);
-$relacaoPerguntaResposta = $perguntas->getPerguntaRespostas(1);
+
+$relacaoPerguntaResposta = $paginador->getPagQuestionario(1, $avaliacaoAtiva);
 $filterP = $perguntas->setPergunta($relacaoPerguntaResposta);
 $filterR = $resposta->setResposta($relacaoPerguntaResposta);
 $rsP = $resposta->setResposta($p);
-$perguntasTotal = $perguntas->getTotalPerguntas(1);
-$totalRespodido = $perguntas->getVerificaRespondido($_SESSION['funcionarioRai'], 1);
-$porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL']);
- 
+$perguntasTotal = $perguntas->getTotalPerguntas(1, $avaliacaoAtiva);
+
+$totalRespodido = $perguntas->getVerificaRespondido($_SESSION['funcionarioRai'], 1, $avaliacaoAtiva);
+$porcentagem = $perguntas->porcentagem($perguntasTotal, $totalRespodido['TOTAL']);
 ?>
 <style>
-    .pf{
+    .pf {
         display: flex;
-        z-index:99;
+        z-index: 99;
         justify-content: right;
         align-items: right;
         /* align-items: center; */
         position: sticky;
-        top: -10px; 
+        top: -10px;
         position: fixed;
         width: 100%;
-        border-left: 3px solid blue;
     }
-    .rai__center{
+
+    .rai__center {
         text-align: center;
-        border-left: 6px solid #2196F3!important;
-        background-color: #cccccc1c!important;
+        border-left: 6px solid #2196F3 !important;
+        background-color: #cccccc1c !important;
     }
+
     .rai__table {
         padding: 0.01em 16px
     }
-    /* .text-muted {
-        text-align: center;
-        color: #4B49AC;
-        font-size: 1em;
+
+    .pagination {
+        display: flex;
+        list-style: none;
+        justify-content: center
     }
-    .text-primary{
-        text-align: center;
+
+    .pagination a {
         color: black;
-        font-size: 12px;
-    } */
-    </style>
+        padding: 8px 16px;
+        text-decoration: none;
+    }
+
+    .pagination a.active {
+        background-color: #4B49AC;;
+        color: white;
+        border-radius: 5px;
+    }
+
+    @media screen and (max-width: 600px) {
+        .flex-wrap {
+            justify-content: center;
+        }
+
+        .rai__center {
+            background-color: #0c0202 !important;
+        }
+    }
+</style>
 <div class="pf">
-<div class="d-flex flex-wrap mb-5 rai__center">
-                    <div class="rai__table mt-3">     
-                      <p class="text-muted">Essa etapa tem</p>
-                      <h3 class="text-primary fs-20 font-weight-medium"><?php echo $perguntasTotal; ?> Perguntas</h3>
-                    </div>
-                    <div class="mr-5 mt-3">
-                      <p class="text-muted" id="p-respondido">Você Respondeu</p>
-                      <h3 class="text-primary fs-20 font-weight-medium" id="total-respondido"><?php echo $totalRespodido['TOTAL']?></h3>
-                    </div>
-                    <div class="mr-5 mt-3">
-                      <p class="text-muted">Porcentagem</p>
-                      <h3 class="text-primary fs-20 font-weight-medium" id="porcentagem"><?php echo $porcentagem; ?>%</h3>
-                    </div>
+    <div class="d-flex flex-wrap mb-5 rai__center">
+        <div class="rai__table mt-3">
+            <p class="text-muted">Essa etapa tem</p>
+            <h5 class="text-primary fs-20 font-weight-medium">
+                <?php echo $perguntasTotal; ?> Perguntas
+            </h5>
+        </div>
+        <div class="mr-5 mt-3">
+            <p class="text-muted" id="p-respondido">Você Respondeu</p>
+            <h5 class="text-primary fs-20 font-weight-medium" id="total-respondido">
+                <?php echo $totalRespodido['TOTAL'] ?>
+            </h5>
+        </div>
+        <div class="mr-5 mt-3">
+            <p class="text-muted">Porcentagem</p>
+            <h5 class="text-primary fs-20 font-weight-medium" id="porcentagem">
+                <?php echo $porcentagem; ?>%
+            </h5>
+        </div>
+        <div class="mr-5 mt-3">
+            <p class="text-muted">Status da Página</p>
+            <h5 class="text-primary fs-20 font-weight-medium" id="status-pag">
+                <?php echo 'Incompleto' ?>
+            </h5>
+        </div>
     </div>
 </div>
-
 <form method="POST" id="form">
     <input type="hidden" id="func" value="<?php echo md5("rai") . 'f' . $_SESSION['funcionarioRai']; ?>">
     <div class="col-12 col-lg-10 grid-margin stretch-card">
@@ -66,23 +101,28 @@ $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL'])
                 <h4 class="card-title" id="nomeFunc"></h4>
                 <h4 class="card-title" id="departamentoFunc"></h4>
                 <h4 class="card-title" id="gestorFunc"></h4>
-                <!-- <h4 class="card-title">Avaliação Essa etapa tem <?php echo $perguntasTotal; ?> Perguntas</h4>
-                <h4 class="card-title">Porcentagem <?php echo $porcentagem; ?>% Perguntas</h4> -->
+                <h4 class="card-title"><?php echo $avaliacaoNome;?></h4>
                 <input id="questionario" type="hidden" name="questionario" value="1">
+
+
                 <?php
                 $i = 1;
                 foreach ($filterP as $pergunta) { ?>
-                    <label for="exampleInputName1"><?php echo $i . '. ' ?>
+                    <label for="exampleInputName1">
+                        <?php echo $i . '. ' ?>
                         <?php echo $pergunta['pergunta']; ?>
                     </label>
                     <div class="row pb-4 mb-3 border-bottom">
                         <div class="form-group va col-12 col-sm-4" id="va">
-                            <input type="hidden" name="hash-rai" value="<?php echo $_SESSION['funcionarioRai'] ?>">
-                            <input class="pergunta" type="hidden" name="idPergunta-<?php echo $pergunta['idPergunta'] ?>"
-                                value="<?php echo $pergunta['idPergunta'] ?>">                                
+                            <input id="avaliacao" type="hidden" name="avaliacao" value="<?php echo $avaliacaoAtiva?>">
+                            <input type="hidden" name="hash-rai"
+                                   value="<?php echo $_SESSION['funcionarioRai'] ?>">
+                            <input class="pergunta" type="hidden"
+                                   name="idPergunta-<?php echo $pergunta['idPergunta'] ?>"
+                                   value="<?php echo $pergunta['idPergunta'] ?>">
                             <p class="card-description">Visão Área</p>
-                            <?php                           
-                            $auxPergunta = "";                           
+                            <?php
+                            $auxPergunta = "";
                             foreach ($filterR as $resposta):
                                 if ($pergunta['idPergunta'] == $resposta['idPergunta'] && $resposta['visao'] == "1") { ?>
                                     <?php if (!empty($rsP) || $rsP != NULL) { ?>
@@ -99,32 +139,36 @@ $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL'])
                                                         echo ($pRespondida['flag'] == "0") ? "disabled " : null;
                                                         echo ($pRespondida['flag'] == "0" && $pRespondida['tohave'] == "1") ? "checked " : null;
                                                     }
-                                                endforeach;
-                                                ?> class="form-check-input" <?php ?>
-                                                    name="optionsVA-<?php echo $pergunta['idPergunta'] ?>"
-                                                    value="<?php echo $resposta['idResposta'] ?>" id="<?php echo $resposta['visao'] ?>">
+                                                endforeach;?>
+                                                       class="form-check-input"
+                                                       name="optionsVA-<?php echo $pergunta['idPergunta'] ?>"
+                                                       value="<?php echo $resposta['idResposta'] ?>"
+                                                       id="<?php echo $resposta['visao'] ?>">
                                                 <?php echo $resposta['resposta'] ?>
                                             </label>
                                         </div>
-                                        <?php
-                                    } else { ?>
+                                        <?php } else { ?>
                                         <div class="form-check form-check-inline">
                                             <label class="form-check-label">
                                                 <input type="radio" class="form-check-input"
-                                                    name="optionsVA-<?php echo $pergunta['idPergunta'];?>"
-                                                    value="<?php echo $resposta['idResposta'];?>" >
+                                                       name="optionsVA-<?php echo $pergunta['idPergunta']; ?>"
+                                                       value="<?php echo $resposta['idResposta']; ?>">
                                                 <?php echo $resposta['resposta'] ?>
                                             </label>
                                         </div>
                                     <?php }
                                 }
-                            endforeach;
-                            ?>
-                            <input class="perguntaRespondida" value="<?php echo ($auxPergunta == "0") ? "checked" : null; ?>" type="hidden" id="idPerguntaRespondida-<?php echo $pergunta['idPergunta']  ?>">
+                            endforeach; ?>
+                            <input class="perguntaRespondida"
+                                   value="<?php echo ($auxPergunta == "0") ? "checked" : null; ?>"
+                                   type="hidden"
+                                   id="idPerguntaRespondida-<?php echo $pergunta['idPergunta'] ?>">
                         </div>
-                        <div class="form-group ve col-12 col-sm-4" id="ve">
-                            <input class="pergunta" type="hidden" name="idPergunta-<?php echo $pergunta['idPergunta']; ?>"
-                                id="<?php echo $pergunta['idPergunta']; ?>" value="<?php echo $pergunta['idPergunta'] ?>">
+                            <div class="form-group ve col-12 col-sm-4" id="ve">
+                                <input class="pergunta" type="hidden"
+                                   name="idPergunta-<?php echo $pergunta['idPergunta']; ?>"
+                                   id="<?php echo $pergunta['idPergunta']; ?>"
+                                   value="<?php echo $pergunta['idPergunta'] ?>">
                             <!-- <input id="visao" type="hidden" name="visaoE" id="visaoE" value="2"> -->
                             <p class="card-description">
                                 Visão Empresa
@@ -136,20 +180,20 @@ $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL'])
                                         <div class="form-check form-check-inline">
                                             <label class="form-check-label">
                                                 <input type="radio" <?php foreach ($rsP as $pRespondida):
-                                                    if (
-                                                        $pRespondida['idResposta'] == $resposta['idResposta'] &&
-                                                        $resposta['idPergunta'] == $pRespondida['idPergunta'] &&
-                                                        $resposta['visao'] == "2" && $pRespondida['flag'] == "0" &&
-                                                        $pRespondida['visao'] == "2"
-                                                    ) {
+                                                        if ($pRespondida['idResposta'] == $resposta['idResposta'] &&
+                                                            $resposta['idPergunta'] == $pRespondida['idPergunta'] &&
+                                                            $resposta['visao'] == "2" && $pRespondida['flag'] == "0" &&
+                                                            $pRespondida['visao'] == "2")
+                                                        {
                                                         echo ($pRespondida['flag'] == "0") ? "disabled " : null;
                                                         echo ($pRespondida['flag'] == "0" && $pRespondida['tohave'] == "1") ? "checked " : null;
-                                                    }
-                                                endforeach;
-                                                ?> class="form-check-input" <?php ?>
-                                                    name="optionsVE-<?php echo $pergunta['idPergunta'] ?>"
-                                                    value="<?php echo $resposta['idResposta'] ?>" id="<?php echo $resposta['visao'] ?>">
-                                                <?php echo $resposta['resposta'] ?>
+                                                        }
+                                                       endforeach;?>
+                                                       class="form-check-input"
+                                                       name="optionsVE-<?php echo $pergunta['idPergunta'] ?>"
+                                                       value="<?php echo $resposta['idResposta'] ?>"
+                                                       id="<?php echo $resposta['visao'] ?>">
+                                                       <?php echo $resposta['resposta'] ?>
                                             </label>
                                         </div>
                                         <?php
@@ -157,24 +201,30 @@ $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL'])
                                         <div class="form-check form-check-inline">
                                             <label class="form-check-label">
                                                 <input type="radio" class="form-check-input"
-                                                    name="optionsVE-<?php echo $pergunta['idPergunta'];?>"
-                                                    value="<?php echo $resposta['idResposta'];?>" >
+                                                       name="optionsVE-<?php echo $pergunta['idPergunta']; ?>"
+                                                       value="<?php echo $resposta['idResposta']; ?>">
                                                 <?php echo $resposta['resposta'] ?>
                                             </label>
                                         </div>
                                     <?php }
                                 }
-                            endforeach;
-                            ?>
+                            endforeach; ?>
                         </div>
                         <div class="form-group col-4 pt-3">
-                            <button type="buttom" <?php echo ($auxPergunta == "0") ? "disabled" : ''; ?> class="btn btn-primary mr-2 sub__mit" id="btn-salvar">Enviar</button>
+                            <button type="buttom" <?php echo ($auxPergunta == "0") ? "disabled" : ''; ?>
+                                    class="btn btn-primary mr-2 sub__mit" id="btn-salvar">Enviar
+                            </button>
                             <!-- <button class="btn btn-secondary">Limpar</button> -->
                         </div>
                     </div>
-                    <?php $i++;
-                } ?>
-                <button type="submit" class="btn btn-primary mr-2 " id="btn-finalizar">Finalizar</button>
+                    <?php $i++;}?>
+                <ul class="pagination">
+                    <li>
+                        <?php $montar = $paginador->ordenarQuestionario() ?>
+                    </li>
+                </ul>
+                <button type="submit" class="btn btn-primary mr-2 " id="btn-finalizar">Finalizar
+                </button>
             </div>
         </div>
 </form>

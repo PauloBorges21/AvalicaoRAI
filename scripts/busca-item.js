@@ -1,72 +1,40 @@
+var url = window.location.pathname;
+var ativo;
+if (url == '/AvaliacaoRAI/rh/editar-list-users.php') {
+    ativo = true;
+} else {
+    ativo = false;
+}
 $("#searchdepertamento").keyup(function () {
     var inputValue = $(this).val().toLowerCase();
-    $("#usu_setor option").filter(function () {
+    $("#usu_tb_setor option").filter(function () {
         $(this).toggle($(this).text().toLowerCase().indexOf(inputValue) > -1);
     });
 });
 
 $("#searchusuario").keyup(function () {
     var inputValue = $(this).val().toLowerCase();
-    $("#usu_user option").filter(function () {
-        $(this).toggle($(this).text().toLowerCase().indexOf(inputValue) > -1);
-    });
+    console.log(inputValue);
+    $.ajax(
+        {
+            type: "POST",
+            url: "../rh/ajax/ajax-pag-edit-user-name.php",
+            dataType: "json",
+            data: {
+                nome: inputValue,
+                ativo: ativo
+            },
+            success: function (result) {
+                $("#tb-striped tbody").html('');
+                $("#pagination").html('');
+                criaTabela(result);
+                var total = result.length;
+                criaPaginador(total);
+            },
+            error: function () {
+                alert("não deu para completar a requisição");
+            }
+        }
+    );
 });
-
-
-// function search_Experiencias() {
-//     let input = document.getElementById('searchbar').value
-//     input = input.toLowerCase();
-//     let x = document.getElementsByClassName('experienciaNome');
-
-//     for (i = 0; i < x.length; i++) {
-//         if (!x[i].innerHTML.toLowerCase().includes(input)) {
-//             x[i].parentNode.style.display = "none";
-//         }
-//         else {
-//             x[i].parentNode.style.display = "table-row";
-//         }
-//     }
-// }
-// function search_ItemCardapio() {
-//     let input = document.getElementById('searchbar').value
-//     input = input.toLowerCase();
-//     let x = document.getElementsByClassName('itemNome');
-
-//     for (i = 0; i < x.length; i++) {
-//         if (!x[i].innerHTML.toLowerCase().includes(input)) {
-//             x[i].parentNode.style.display = "none";
-//         }
-//         else {
-//             x[i].parentNode.style.display = "table-row";
-//         }
-//     }
-// }
-// function search_Item() {
-//     let input = document.getElementById('searchbar').value
-//     input = input.toLowerCase();
-//     let x = document.getElementsByClassName('itemCI');
-
-//     for (i = 0; i < x.length; i++) {
-//         if (!x[i].innerHTML.toLowerCase().includes(input)) {
-//             x[i].style.display = "none";
-//         }
-//         else {
-//             x[i].style.display = "block";
-//         }
-//     }
-// }
-// function search_Hosp() {
-//     let input = document.getElementById('searchbar').value
-//     input = input.toLowerCase();
-//     let x = document.getElementsByClassName('itemN');
-
-//     for (i = 0; i < x.length; i++) {
-//         if (!x[i].innerHTML.toLowerCase().includes(input)) {
-//             x[i].style.display = "none";
-//         }
-//         else {
-//             x[i].style.display = "table-row";
-//         }
-//     }
-// }
 

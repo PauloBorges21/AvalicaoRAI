@@ -7,15 +7,16 @@
 // $filterR = $resposta->setResposta($relacaoPerguntaResposta);
 
 // $perguntasTotal = $perguntas->getTotalPerguntas(2);
+$avaliacaoAtiva = $idAvaliacao['id'];
+$avaliacaoNome = $idAvaliacao['avaliacao'];
 
-
-$vFlagTotal = $perguntas->getTotalFlag($_SESSION['funcionarioRai'], 2);
-$relacaoPerguntaResposta = $perguntas->getPerguntaRespostas(2);
+$vFlagTotal = $perguntas->getTotalFlag($_SESSION['funcionarioRai'], 2,$avaliacaoAtiva);
+$relacaoPerguntaResposta = $perguntas->getPerguntaRespostas(2,$avaliacaoAtiva);
 $filterP = $perguntas->setPergunta($relacaoPerguntaResposta);
 $filterR = $resposta->setResposta($relacaoPerguntaResposta);
 $rsP = $resposta->setResposta($p2);
-$perguntasTotal = $perguntas->getTotalPerguntas(2);
-$totalRespodido = $perguntas->getVerificaRespondido($_SESSION['funcionarioRai'], 2);
+$perguntasTotal = $perguntas->getTotalPerguntas(2,$avaliacaoAtiva);
+$totalRespodido = $perguntas->getVerificaRespondido($_SESSION['funcionarioRai'], 2,$avaliacaoAtiva);
 $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL']);
 
 ?>
@@ -28,6 +29,7 @@ $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL'])
                 <h4 class="card-title" id="departamentoFunc"></h4>
                 <h4 class="card-title" id="gestorFunc"></h4>
                 <h4 class="card-title">Avaliação Essa etapa tem <?php echo $perguntasTotal; ?></h4>
+                <h4 class="card-title"><?php echo $avaliacaoNome;?></h4>
                 <input id="questionario" type="hidden" name="questionario" value="2">
                 <p class="card-description">Questionário 2</p>
                 <?php
@@ -40,6 +42,7 @@ $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL'])
                     </label>
                     <div class="row pb-4 mb-3 border-bottom">
                         <div class="form-group va col-4" id="va">
+                            <input id="avaliacao" type="hidden" name="avaliacao" value="<?php echo $avaliacaoAtiva?>">
                             <input type="hidden" name="hash-rai" value="<?php echo $_SESSION['funcionarioRai'] ?>">
                             <input class="pergunta" type="hidden" name="idPergunta-<?php echo $pergunta['idPergunta'] ?>"
                                 value="<?php echo $pergunta['idPergunta'] ?>">
@@ -98,7 +101,7 @@ $porcentagem = $perguntas->porcentagem($perguntasTotal,$totalRespodido['TOTAL'])
                     <?php $i++;
 
                 } ?>
-                <button type="submit" class="btn btn-primary mr-2 " id="btn-finalizar">Finalizar</button>
+                <button type="submit" class="btn btn-primary mr-2" id="btn-finalizar">Finalizar</button>
             </div>
 
         </div>

@@ -7,11 +7,11 @@ class Questionario
         $this->pdo = $pdo;
     }
 
-    public function gravarQuestionario($idUsuario, $idPergunta, $idResposta, $id_questionario, $idVisao)
+    public function gravarQuestionario($idUsuario, $idPergunta, $idResposta, $id_questionario, $idVisao, $idAvaliacao)
     {
 
-        $sql = "INSERT INTO resposta_funcionario (id_funcionario, id_pergunta, id_resposta, flag_finalizado, id_questionario, id_tipo_visao)
-        VALUES (:id_funcionario, :id_pergunta, :id_resposta, :flag_finalizado, :id_questionario, :id_tipo_visao)";
+        $sql = "INSERT INTO resposta_funcionario (id_funcionario, id_pergunta, id_resposta, flag_finalizado, id_questionario, id_tipo_visao, id_avaliacao)
+        VALUES (:id_funcionario, :id_pergunta, :id_resposta, :flag_finalizado, :id_questionario, :id_tipo_visao, :id_avaliacao)";
 
         try {
             $sql = $this->pdo->prepare($sql);
@@ -21,6 +21,7 @@ class Questionario
             $sql->bindValue(':flag_finalizado', 0);
             $sql->bindValue(':id_questionario', $id_questionario);
             $sql->bindValue(':id_tipo_visao', $idVisao);
+            $sql->bindValue(':id_avaliacao', $idAvaliacao);
             $sql->execute();
             if ($sql->rowCount() > 0) {
                 return true;
@@ -30,12 +31,12 @@ class Questionario
         }
     }
 
-    public function finalizaQuestionario($idUsuario, $idPergunta, $idRespostaVE, $id_questionario, $idVisao)
+    public function finalizaQuestionario($idUsuario, $idPergunta, $idRespostaVE, $id_questionario, $idVisao,$idAvaliacao)
     {
 
         $sql = "UPDATE resposta_funcionario
         SET finalizacao_questionario = GETDATE()
-        WHERE id_funcionario = :id_funcionario AND id_pergunta = :id_pergunta AND id_resposta = :id_resposta AND id_tipo_visao = :id_tipo_visao AND id_questionario = :id_questionario";
+        WHERE id_funcionario = :id_funcionario AND id_pergunta = :id_pergunta AND id_resposta = :id_resposta AND id_tipo_visao = :id_tipo_visao AND id_questionario = :id_questionario AND id_avaliacao = :id_avaliacao";
 
         try {
             $sql = $this->pdo->prepare($sql);
@@ -44,6 +45,7 @@ class Questionario
             $sql->bindValue(':id_resposta', $idRespostaVE);
             $sql->bindValue(':id_questionario', $id_questionario);
             $sql->bindValue(':id_tipo_visao', $idVisao);
+            $sql->bindValue(':id_avaliacao', $idAvaliacao);
             $sql->execute();
             if ($sql->rowCount() > 0) {
                 return true;
@@ -53,16 +55,21 @@ class Questionario
         }
     }
 
-    public function finalizaQuestionario1($idUsuario, $id_questionario)
+    public function finalizaQuestionario1($idUsuario, $id_questionario,$idAvaliacao)
     {
 
         $sql = "UPDATE resposta_funcionario
-        SET finalizacao_questionario = GETDATE()
-        WHERE id_funcionario = :id_funcionario AND id_questionario = :id_questionario";
+                SET finalizacao_questionario = GETDATE(),
+                    flag_finalizado = 1
+                WHERE
+                    id_funcionario = :id_funcionario
+                AND id_questionario = :id_questionario
+                AND id_avaliacao = :id_avaliacao";
         try {
             $sql = $this->pdo->prepare($sql);
             $sql->bindValue(':id_funcionario', $idUsuario);
             $sql->bindValue(':id_questionario', $id_questionario);
+            $sql->bindValue(':id_avaliacao', $idAvaliacao);
             $sql->execute();
             if ($sql->rowCount() > 0) {
                 return true;
@@ -115,6 +122,51 @@ class Questionario
             LEFT JOIN resposta_funcionario rf ON f.id  = rf.id_funcionario AND rf.ativo = 1 AND id_questionario = 2
           WHERE 
             f.ativo = 1";
+            $sql = $this->pdo->prepare($sql);
+            $sql->execute();
+            $result = $sql->fetchAll();
+            if ($result != false) {
+                return $result;
+            }
+        } catch (PDOException $e) {
+            echo "{$e->getMessage()}";
+        }
+    }
+
+    public function getQuestionarios()
+    {
+        try {
+            $sql = "SELECT * FROM tipo_questionario where ativo = 1";
+            $sql = $this->pdo->prepare($sql);
+            $sql->execute();
+            $result = $sql->fetchAll();
+            if ($result != false) {
+                return $result;
+            }
+        } catch (PDOException $e) {
+            echo "{$e->getMessage()}";
+        }
+    }
+
+    public function getModelosPratica()
+    {
+        try {
+            $sql = "SELECT * FROM categoria_pratica where ativo = 1";
+            $sql = $this->pdo->prepare($sql);
+            $sql->execute();
+            $result = $sql->fetchAll();
+            if ($result != false) {
+                return $result;
+            }
+        } catch (PDOException $e) {
+            echo "{$e->getMessage()}";
+        }
+    }
+
+    public function getModelosDimensoes()
+    {
+        try {
+            $sql = "SELECT * FROM categoria_dimensao where ativo = 1";
             $sql = $this->pdo->prepare($sql);
             $sql->execute();
             $result = $sql->fetchAll();

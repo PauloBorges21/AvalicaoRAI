@@ -1,3 +1,11 @@
+var url = window.location.pathname;
+var ativo;
+if (url == '/AvaliacaoRAI/rh/editar-list-users.php') {
+    ativo = true;
+} else {
+    ativo = false;
+}
+
 $(document).ready(function () {
     $("#email-usuario-edit").blur(function () {
         var email = $(this).val();
@@ -41,9 +49,10 @@ $("#usu_setor").change(function () {
     );
 });
 
-
 $("#usu_tb_setor").change(function () {
     var selectedValue = $(this).val();
+    //Verificando a URL para Mandar o paramentro para o AJAX
+    console.log(ativo);
     $.ajax(
         {
             type: "POST",
@@ -51,6 +60,7 @@ $("#usu_tb_setor").change(function () {
             dataType: "json",
             data: {
                 departamento: selectedValue,
+                ativo: ativo
             },
             success: function (result) {                
                 $("#tb-striped tbody").html('');
@@ -66,6 +76,36 @@ $("#usu_tb_setor").change(function () {
         }
     );
 });
+
+
+$("#usuario_tb").change(function () {
+    var selectedValue = $(this).val();
+    var selectedText = $(this).find('option:selected').text();
+    console.log(selectedText);
+    console.log(ativo);
+    $.ajax(
+        {
+            type: "POST",
+            url: "../rh/ajax/ajax-pag-edit-user-name.php",
+            dataType: "json",
+            data: {
+                nome: selectedText,
+                ativo: ativo
+            },
+            success: function (result) {
+                $("#tb-striped tbody").html('');
+                $("#pagination").html('');
+                criaTabela(result);
+                var total = result.length;
+                criaPaginador(total);
+            },
+            error: function () {
+                alert("não deu para completar a requisição");
+            }
+        }
+    );
+});
+
 
 function criaTabela(result) {
     $.each(result, function (index, pessoa) {
@@ -99,20 +139,17 @@ var pageNumber = 1;
 // }
 // Cria Paginador numeral 
 function criaPaginador(total) {
-
     $.ajax(
         {
             type: "POST",
             url: "../rh/ajax/ajax-pag-number.php",            
             data: {
                 total: total,
-                
             },
             success: function (result) {
                 console.log(result);
                 $('#pagination').html(result);
             },
-            
             error: function () {
                 alert("não deu para completar a requisição");
             }
@@ -177,7 +214,6 @@ if (btn_editar.length > 0) {
                         gestor: gestor
                     },
                     success: function (result) {
-
                         alert("Usuário Editado:");
                         location.href = 'editar-list-users.php';
                     },
@@ -209,14 +245,10 @@ function tratarCampo(nome, email, cpf, setor, gestor) {
         $("#cvdepar").css("display", "inline").fadeOut(5000);
         $('#dp-usuario-edit').focus();
         return false
-
     } else if (gestor == "Selecione") {
         $("#cvgestores").css("display", "inline").fadeOut(5000);
         $('#dp-gestor-edit').focus();
         return false
-
     }
     return true;
 }
-
-

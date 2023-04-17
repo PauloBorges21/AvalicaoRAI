@@ -27,17 +27,17 @@ $q = $questionario->statusReport();
 
 <div class="content-wrapper">
 
-<div class="form-group">
-                <label for="Dsetor">Departamento</label>
-                <select class="form-control" id="Dsetor" required>
-                  <option value="Selecione">Selecione</option>
-                  <?php foreach ($d as $itens): ?>
-                    <option value="<?php echo $itens['id'] ?>">
-                      <?php echo $itens['nome'] ?>
-                    </option>
-                  <?php endforeach; ?>
-                </select>          
-              </div>
+  <div class="form-group">
+    <label for="Dsetor">Departamento</label>
+    <select class="form-control" id="Dsetor" required>
+      <option value="Selecione">Selecione</option>
+      <?php foreach ($d as $itens): ?>
+        <option value="<?php echo $itens['id'] ?>">
+          <?php echo $itens['nome'] ?>
+        </option>
+      <?php endforeach; ?>
+    </select>
+  </div>
   <div class="row">
     <div class="col-md-12 grid-margin stretch-card">
       <div class="card position-relative">
@@ -48,7 +48,8 @@ $q = $questionario->statusReport();
 
               <?php foreach ($d as $key => $dp) { ?>
                 <div class="carousel-item <?php if ($key == 0)
-                  echo 'active' ?>">
+                  echo 'active' ?>" data-id="<?php echo $dp['id']; ?>">
+                  
                     <div class="row">
                       <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-start">
                         <div class="ml-xl-4 mt-3">
@@ -87,11 +88,12 @@ $q = $questionario->statusReport();
                                   ?>
                                   <tr>
                                     <td>
-                                      <?php echo ucfirst($statusReport['nome']) ?>
+                                      <?php $str = mb_strtolower($statusReport['nome'],'UTF-8')?>
+                                      <?php echo ucfirst($str) ?>
                                     </td>
                                     <!-- <td class="font-weight-bold">
-                                      <?php //echo ucfirst($statusReport['Departamento']; ?>
-                                    </td> -->
+                                            <?php //echo ucfirst($statusReport['Departamento']; ?>
+                                          </td> -->
 
                                     <td class="font-weight-medium">
                                       <div class="badge badge-<?php echo $classBtn; ?>"><?php echo $stringBtn ?></div>
@@ -118,14 +120,14 @@ $q = $questionario->statusReport();
                         </div>
                       </div>
 
-                      <div class="col-md-3 stretch-card grid-margin grid-margin-md-0">                  
-                   
-                    <div class="mr-5 mt-3">
-                      <p class="text-muted">Conclusão</p>
-                      <h3 class="text-primary fs-30 font-weight-medium" data-por ='<?php echo $dp['id']?>'></h3>
-                    </div>
+                      <div class="col-md-3 stretch-card grid-margin grid-margin-md-0">
 
-                
+                        <div class="mr-5 mt-3">
+                          <p class="text-muted">Conclusão</p>
+                          <h3 class="text-primary fs-30 font-weight-medium" data-por='<?php echo $dp['id'] ?>'></h3>
+                        </div>
+
+
                       </div>
                     </div>
 

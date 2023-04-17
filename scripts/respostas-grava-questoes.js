@@ -1,16 +1,24 @@
 
-$(document).ready(function () {
+$(document).ready(async function  () {
     let inputs = $('.perguntaRespondida');
     if (checarForm(inputs) === true) {
         $('#status-pag').html("");
-
         $('#status-pag').html("Completo");
-
     } else {
         $('#status-pag').html("Incompleto");
     }
-
     buscaFuncionario();
+    let q = $('#questionario').val();
+    let iduser = splitHash($('#func').val());
+    let getPorcentagem = await verificaPorcentagem(q, iduser,false);
+
+    if(q == 1) {
+            if (getPorcentagem[1] == 100) {
+                $('button[type="submit"]').prop('disabled', false);
+            } else {
+                $('button[type="submit"]').prop('disabled', true);
+            }
+        }
 })
 
 var formDisabled;
@@ -26,10 +34,14 @@ for (let i = 0; i < botao.length; i++) {
         itemClick = event.target;
         itemGroup = itemClick.parentElement.parentElement;
         const q = $('#questionario').val();
+        const avaliacao = $('#avaliacao').val();
+        itemClick.disabled = true;
         var quest = {
             idpergunta: itemGroup.querySelector('.pergunta').value,
-            idusuario: itemGroup.querySelector('input[name="hash-rai"]').value
+            idusuario: itemGroup.querySelector('input[name="hash-rai"]').value,
+            idAvaliacao: avaliacao
         };
+        console.log(quest)
         var form = Array.from(itemGroup.querySelectorAll("input:checked"));
         formDisabled = Array.from(itemGroup.querySelectorAll("input[type='radio']"));
 
@@ -39,17 +51,16 @@ for (let i = 0; i < botao.length; i++) {
             result[name] = value;
         });
         const idUsuario = splitHash($('#func').val());
-        
         if (q == 1) {
             // Validando se os dois campos foram enviados;
             if (Object.keys(result).length == 2) {
                 const newObj = { ...quest, ...result };
                 gravaQuestoes(newObj, q);
                 result = {};
-
-                atualizaPorcentagem(q, idUsuario);
+                atualizaPorcentagem(q, idUsuario,true);
             } else {
                 alert("Por favor preencha com as duas respostas");
+                itemClick.disabled = false;
             }
         } else {
             if (Object.keys(result).length == 1) {
@@ -58,62 +69,53 @@ for (let i = 0; i < botao.length; i++) {
                 result = {};
             } else {
                 alert("Por favor preencha com um resposta");
+                itemClick.disabled = false;
             }
         }
     });
 }
-
-
-document.getElementById("btn-finalizar").addEventListener("click", async function (event) {
-    event.preventDefault();
-    
-    let input = $(':input:checked');
-    let iduser = splitHash($('#func').val());
-    let qs = $('#questionario').val();
-    
-    console.log(qs);
-    
-    if (qs == '1') {
-        
-        const getPorcentagem = await verificaPorcentagem(qs, iduser);
-        console.log(getPorcentagem);
-        if (input.length > 0 && getPorcentagem == 100) {
-            let inputs = $('.perguntaRespondida');
-            if (checarForm(inputs) === true) {
-                var form = document.querySelector('#form');
-                const formdatava = $('.va');
-                const formdatave = $('.ve');
-                var objVA = criarObj(formdatava);
-                var objVE = criarObj(formdatave);
-                finalizaQuestoes1(qs, iduser);
+if ($("#btn-finalizar").length) {
+    document.getElementById("btn-finalizar").addEventListener("click", async function (event) {
+        event.preventDefault();
+        let input = $(':input:checked');
+        let iduser = splitHash($('#func').val());
+        let qs = $('#questionario').val();
+        if (qs == '1') {
+            const getPorcentagem = await verificaPorcentagem(qs, iduser,false);
+            if (input.length > 0 && getPorcentagem[1] >= 100) {
+                let inputs = $('.perguntaRespondida');
+                if (checarForm(inputs) === true) {
+                    var form = document.querySelector('#form');
+                    const formdatava = $('.va');
+                    const formdatave = $('.ve');
+                    var objVA = criarObj(formdatava);
+                    var objVE = criarObj(formdatave);
+                    finalizaQuestoes(qs, iduser);
+                } else {
+                    alert("Preencher todas as respostas");
+                }
             } else {
                 alert("Preencher todas as respostas");
-
             }
-
         } else {
-            alert("Preencher todas as respostas");
-        }
-    } else {
-
-        if (input.length > 0) {
-            let inputs = $('.perguntaRespondida');
-            if (checarForm(inputs) === true) {
-                var form = document.querySelector('#form');
-                const formdatava = $('.va');
-                const formdatave = $('.ve');
-                var objVA = criarObj(formdatava);
-                var objVE = criarObj(formdatave);
-                finalizaQuestoes(objVA, qs);
+            if (input.length > 0) {
+                let inputs = $('.perguntaRespondida');
+                if (checarForm(inputs) === true) {
+                    var form = document.querySelector('#form');
+                    const formdatava = $('.va');
+                    const formdatave = $('.ve');
+                    var objVA = criarObj(formdatava);
+                    var objVE = criarObj(formdatave);
+                    finalizaQuestoes(qs, iduser);
+                } else {
+                    alert("Você não Preencheu todas as respostas");
+                }
             } else {
                 alert("Você não Preencheu todas as respostas");
             }
-        } else {
-            alert("Você não Preencheu todas as respostas");
         }
-    }
-});
-
+    });
+}
 
 function gravaQuestoes(newObj, q) {
     var dados = JSON.stringify(newObj);
@@ -143,24 +145,23 @@ function gravaQuestoes(newObj, q) {
         }
     });
 }
-
 // UPDATE FINALIZANDO O FORM
-function finalizaQuestoes(newObj,q) {
-    var dados = JSON.stringify(newObj);
-    var url_atual = window.location.href;
-    $.ajax({
-        url: "ajax/ajax-grava-form.php",
-        method: "POST",
-        dataType: "json",
-        data: { dados: dados, q: q },
-        success: function (data) {
-            alert("Questionário Finalizado");
-            window.location = url_atual;
-        }
-    });
-}
+// function finalizaQuestoes(newObj,q) {
+//     var dados = JSON.stringify(newObj);
+//     var url_atual = window.location.href;
+//     $.ajax({
+//         url: "ajax/ajax-grava-form.php",
+//         method: "POST",
+//         dataType: "json",
+//         data: { dados: dados, q: q },
+//         success: function (data) {
+//             alert("Questionário Finalizado");
+//             window.location = url_atual;
+//         }
+//     });
+// }
 
-function finalizaQuestoes1(qs, iduser) {
+function finalizaQuestoes(qs, iduser) {
     //var dados = JSON.stringify(newObj);
     var url_atual = window.location.href;
     $.ajax({
@@ -179,7 +180,6 @@ function checarForm(inputs) {
     var bool = true;
     inputs.each(function () {
         if ($(this).val() != "checked") {
-            console.log($(this).val());
             bool = false;
             return bool;
         }
@@ -202,29 +202,38 @@ function criarObj(obj) {
     return result;
 }
 
-function atualizaPorcentagem(q, usuario) {
+function atualizaPorcentagem(qs, iduser,boolean) {
     $.ajax({
-        url: "ajax/ajax-atualiza-porcentagem.php",
+        url: "ajax/ajax-verifica-porcentagem.php",
         method: "POST",
         dataType: "json",
-        data: { usuario: usuario, q: q },
+        data: {
+            iduser: iduser,
+            qs: qs,
+            boolean:boolean
+        },
         success: function (arr) {
             var respondidas = arr[0];
             var porcento = arr[1];
-
             $('#total-respondido').html("");
             $('#porcentagem').html("");
-
             $('#total-respondido').html(respondidas[0]);
             $('#porcentagem').html(porcento + '%');
 
+            console.log(arr)
+            if(qs == 1) {
+                if (arr[1] == 100) {
+                    $('button[type="submit"]').prop('disabled', false);
+                } else {
+                    $('button[type="submit"]').prop('disabled', true);
+                }
+            }
+
         }
     });
-
 }
 
-
-async function verificaPorcentagem(qs, iduser) {
+async function verificaPorcentagem(qs, iduser,boolean) {
     const result = await $.ajax({
         url: "ajax/ajax-verifica-porcentagem.php",
         async: true,
@@ -232,10 +241,10 @@ async function verificaPorcentagem(qs, iduser) {
         dataType: "json",
         data: {
             iduser: iduser,
-            qs: qs
+            qs: qs,
+            boolean:boolean
         },
         success: function (result) {
-        //   return result;
         },
         beforeSend: function () {
             $('.loader').css({ display: "block" });
@@ -245,7 +254,6 @@ async function verificaPorcentagem(qs, iduser) {
         },
         error: function () {
             alert("Erro ao enviar dados");
-
         }
     });
  return result;

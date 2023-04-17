@@ -3,7 +3,6 @@ spl_autoload_register(function ($class) {
     require '../../classes/' . $class . '.php';
 });
 require_once("../../config.php");
-
 $media = new Respostas($pdo);
 function getData()
 {
@@ -11,36 +10,39 @@ function getData()
     return $perguntas;
 }
 
-$selectedValue = $_GET['selectedValue'];
-
-intval($selectedValue);
+if ($_GET['selectedValue'] == 49) {
+    $dp = [49, 61, 62];
+} elseif ($_GET['selectedValue'] == 54) {
+    $dp = [54, 65];
+} elseif ($_GET['selectedValue'] == 53) {
+    $dp = [53, 63];
+} else {
+    intval($_GET['selectedValue']);
+    $dp[] = $_GET['selectedValue'];
+}
 //$selectedValue = 10;
-
-$totalRespostas = $media->countRespostaOP(74, $selectedValue);
+//$totalRespostas = $media->countRespostaOP(74, $selectedValue);
 if (isset($_GET['action']) && $_GET['action'] == "getData") {
     $perguntasP = getData();
-    $totalPRespostas = $media->countRespostaOP($perguntasP, $selectedValue);
+    $totalPRespostas = $media->countRespostaOP($perguntasP, $dp, $_GET['presidencia']);
     $sum = 0;
-
     foreach ($totalPRespostas as $value) {
         $sum += $value->total;
     }
-
     if($sum > 0)
     {
-
-    $auxiliarP = [];
-    $auxiliarPResult = [];
-    foreach ($totalPRespostas as $itens):
-        array_push($auxiliarP, $itens->total);
-    endforeach;
-    $gconfianca = $media->porcentagemSingularTotal($auxiliarP, 7, true, $sum);
-    $auxiliarP = [];
-    echo json_encode($gconfianca);
+        $auxiliarP = [];
+        $auxiliarPResult = [];
+        foreach ($totalPRespostas as $itens):
+            array_push($auxiliarP, $itens->total);
+        endforeach;
+        $gconfianca = $media->porcentagemSingularTotal($auxiliarP, 7, true, $sum);
+        $auxiliarP = [];
+        echo json_encode($gconfianca);
     } else {
-        echo json_encode(0);
+        $arrayZerado = [0,0,0,0,0,0,0];
+        echo json_encode($arrayZerado);
     }
-  
 }
 
 //echo json_encode($totalRespostas);
